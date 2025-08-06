@@ -59,8 +59,8 @@ importers:
         specifier: 1.0.3
         version: 1.0.3
       youtubei.js:
-        specifier: 15.1.1
-        version: 15.1.1
+        specifier: github:aeqe/YouTube.js#0c2597f87743c0ac720e99667f4f1f79d726b594
+        version: https://codeload.github.com/aeqe/YouTube.js/tar.gz/0c2597f87743c0ac720e99667f4f1f79d726b594
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -2186,8 +2186,14 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+<<<<<<< HEAD
   youtubei.js@15.1.1:
     resolution: {integrity: sha512-fuEDj9Ky6cAQg93BrRVCbr+GTYNZQAIFZrx/a3oDRuGc3Mf5bS0dQfoYwwgjtSV7sgAKQEEdGtzRdBzOc8g72Q==}
+=======
+  youtubei.js@https://codeload.github.com/aeqe/YouTube.js/tar.gz/0c2597f87743c0ac720e99667f4f1f79d726b594:
+    resolution: {tarball: https://codeload.github.com/aeqe/YouTube.js/tar.gz/0c2597f87743c0ac720e99667f4f1f79d726b594}
+    version: 15.0.0
+>>>>>>> 5215aafa (swap youtubei.js to test)
 
   zimmerframe@1.1.2:
     resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
@@ -4044,7 +4050,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  youtubei.js@15.1.1:
+  youtubei.js@https://codeload.github.com/aeqe/YouTube.js/tar.gz/0c2597f87743c0ac720e99667f4f1f79d726b594:
     dependencies:
       '@bufbuild/protobuf': 2.2.5
       jintr: 3.3.1
