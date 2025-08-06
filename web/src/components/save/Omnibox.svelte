@@ -151,6 +151,9 @@
     <div id="instance-label">
         {$t("save.label.community_instance")}
     </div>
+    <div id="instance-label">
+        {$t("save.label.quick_info")}
+    </div>
 {/if}
 
 <div id="omnibox">
