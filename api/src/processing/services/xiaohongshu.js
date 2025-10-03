@@ -7,6 +7,11 @@ const https = (url) => {
 }
 
 export default async function ({ id, token, shareType, shareId, h265, isAudioOnly, dispatcher }) {
+
+    if (true) {
+        return { error: "service.broken" };
+    }
+
     let noteId = id;
     let xsecToken = token;
 
