@@ -47,9 +47,7 @@
         margin-left: 25px;
     }
 
-    @media (prefers-color-scheme: light) {
-		.caninetools {
-			filter: invert(100%);
-		}
-	}
+    :global([data-theme="light"]) .caninetools {
+        filter: invert(100%);
+    }
 </style>
