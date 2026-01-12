@@ -16,6 +16,7 @@ RUN pnpm deploy --filter=@imput/cobalt-api /prod/api
 
 FROM base AS api
 WORKDIR /app
+RUN apk add --no-cache ca-certificates
 
 COPY --from=build --chown=node:node /prod/api /app
 COPY --from=build --chown=node:node /app/.git /app/.git
