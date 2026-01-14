@@ -1,7 +1,7 @@
 import { base64ToU8 } from 'googlevideo/utils';
 import { OnesieHeader, OnesieHeaderType, OnesieInnertubeRequest, OnesieInnertubeResponse, OnesieProxyStatus, OnesieRequest, UMPPartId } from 'googlevideo/protos';
 import { CompositeBuffer, UmpReader } from 'googlevideo/ump';
-import { Constants, YT } from 'youtubei.js';
+import Innertube, { Constants, HTTPClient, YT } from 'youtubei.js';
 
 // huge thanks to https://github.com/LuanRT/googlevideo/blob/main/examples/onesie-request/main.ts
 // for basically all of this <3
@@ -34,15 +34,15 @@ const getOnesieHotConfig = async (force) => {
 	return data;
 };
 
-const encodeOnesieRequest = async (payload, clientContext) => {
+const encodeOnesieRequest = async (payload) => {
 	const hotConfig = await getOnesieHotConfig();
 
 	const innertubeRequest = OnesieInnertubeRequest.encode({
 		url: 'https://youtubei.googleapis.com/youtubei/v1/player?key=AIzaSyDCU8hByM-4DrUqRUYnGn-3llEO78bcxq8',
 		headers: Object.entries({
 			"Content-Type": "application/json",
-			"User-Agent": clientContext.userAgent,
-			"X-Goog-Visitor-Id": clientContext.visitorData,
+			"User-Agent": payload.context.client.userAgent,
+			"X-Goog-Visitor-Id": payload.context.client.visitorData,
 		}).map(([k, v]) => ({ name: k, value: v })),
 		body: JSON.stringify(payload),
 		proxiedByTrustedBandaid: true,
@@ -67,8 +67,8 @@ const encodeOnesieRequest = async (payload, clientContext) => {
 			poToken: undefined,
 			playbackCookie: undefined,
 			clientInfo: {
-				clientName: Constants.CLIENT_NAME_IDS[clientContext.clientName],
-				clientVersion: clientContext.clientVersion,
+				clientName: Constants.CLIENT_NAME_IDS[payload.context.client.clientName],
+				clientVersion: payload.context.client.clientVersion,
 			},
 		},
 		bufferedRanges: [],
@@ -120,7 +120,6 @@ const encodeVideoId = (videoId) => {
 		.join('');
 };
 
-
 // todo: completely honest: this entire function is entirely copy-pasted
 // from https://github.com/LuanRT/googlevideo/blob/main/examples/onesie-request/utils.ts
 const encryptRequest = async (clientKey, data) => {
@@ -163,44 +162,43 @@ const encryptRequest = async (clientKey, data) => {
 	return { encrypted, hmac, iv };
 }
 
-// todo: remove this once possible
-const adjustContext = (ctx, client) => {
-	const clonedContext = structuredClone(ctx);
-	if (client !== "WEB") delete clonedContext.client.configInfo;
+/**
+ * this is a really bad hack to get an adjusted context
+ * as the function in youtube.js is inaccessible:
+ * https://github.com/LuanRT/YouTube.js/blob/769721c193f2073522a9d35708a07dc8b493f1c7/src/utils/HTTPClient.ts#L202
+ * @param {Innertube} yt 
+ */
+const adjustPayload = (yt, payload) => {
+	delete payload.parse;
 
-	clonedContext.client.clientName = Constants.CLIENTS[client].NAME;
-	clonedContext.client.clientVersion = Constants.CLIENTS[client].VERSION;
-
-	if (client == "WEB_EMBEDDED") {
-		clonedContext.client.clientScreen = "EMBED";
-		clonedContext.thirdParty = { embedUrl: "https://www.google.com/" };
-	}
-
-	return clonedContext;
+	return new Promise((res, rej) => {
+		const http = new HTTPClient(yt.session, yt.session.cookie, async (_, { body }) => {
+			const parsedData = JSON.parse(body);
+			res(parsedData);
+			return Response.json({});
+		});
+		http.fetch(Constants.URLS.API.PRODUCTION_1 + yt.session.api_version, {
+			body: JSON.stringify({
+				context: yt.session.context,
+				...payload,
+			}),
+			headers: {
+				"Content-Type": "application/json",
+			},
+			method: "POST",
+		}).catch(rej);
+	});
 }
 
-export const getBasicInfo = async (yt, videoId, client) => {
+export const getBasicInfo = async (yt, payload) => {
 	// todo: figure out how to best adjust the payload's
 	// context; the function in yt.js responsible for this
 	// is private:
 	// https://github.com/LuanRT/YouTube.js/blob/769721c193f2073522a9d35708a07dc8b493f1c7/src/utils/HTTPClient.ts#L202
-	const ctx = adjustContext(yt.session.context, client);
-
-	const payload = {
-		context: ctx,
-		playbackContext: {
-			contentPlaybackContext: {
-				vis: 0,
-				splay: false,
-				lactMilliseconds: '-1',
-				signatureTimestamp: yt.session.player?.signature_timestamp,
-			}
-		},
-		videoId
-	};
-
-	const { onesieRequest, baseUrl } = await encodeOnesieRequest(payload, ctx.client);
-	const encodedVideoId = encodeVideoId(videoId);
+	payload = await adjustPayload(yt, payload);
+	
+	const { onesieRequest, baseUrl } = await encodeOnesieRequest(payload);
+	const encodedVideoId = encodeVideoId(payload.videoId);
 
 	// get a cdn url: for some reason this can
 	// just 404 for no reason at all
