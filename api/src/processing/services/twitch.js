@@ -48,7 +48,8 @@ export default async function (obj) {
             {
                 "operationName": "VideoAccessToken_Clip",
                 "variables": {
-                    "slug": obj.clipId
+                    "slug": obj.clipId,
+                    "platform": "web"
                 },
                 "extensions": {
                     "persistedQuery": {
