@@ -22,13 +22,10 @@ jobs:
                   WEB_HOST: ${{ secrets.WEB_HOST }}
                   WEB_DEFAULT_API: ${{ secrets.WEB_DEFAULT_API }}
 
-            - name: Clean up
-              run: rm -rf ./.git* node_modules package.json bun.lock
-
             - name: Deploy to BunnyCDN
               uses: ayeressian/bunnycdn-storage-deploy@251c77f4b9e7e683ad00086de2bef5770c3386b2
               with:
-                source: "./web/dist"
+                source: "./web/build"
                 destination: "."
                 storageZoneName: "${{ secrets.BUNNY_STORAGE_ZONE_NAME }}"
                 storagePassword: "${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}"
