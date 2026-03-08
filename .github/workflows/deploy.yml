@@ -17,7 +17,7 @@ jobs:
               uses: oven-sh/setup-bun@ecf28ddc73e819eb6fa29df6b34ef8921c743461
 
             - name: Run build
-              run: bun run build
+              run: cd web && bun install && bun run build
               env: # Or as an environment variable
                   WEB_HOST: ${{ secrets.WEB_HOST }}
                   WEB_DEFAULT_API: ${{ secrets.WEB_DEFAULT_API }}
@@ -28,7 +28,7 @@ jobs:
             - name: Deploy to BunnyCDN
               uses: ayeressian/bunnycdn-storage-deploy@251c77f4b9e7e683ad00086de2bef5770c3386b2
               with:
-                source: "./dist"
+                source: "./web/dist"
                 destination: "."
                 storageZoneName: "${{ secrets.BUNNY_STORAGE_ZONE_NAME }}"
                 storagePassword: "${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}"
