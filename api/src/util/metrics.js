@@ -70,7 +70,7 @@ const failedApiRequests = new Counter({
 const totalApiRequests = new Counter({
     name: "api_requests_total",
     help: "Total number of API requests",
-    labelNames: ["authType", "endpoint"],
+    labelNames: ["authType"],
     registry: [aggregatorRegistry]
 });
 
@@ -117,6 +117,6 @@ export function addFailedApiRequest(error) {
     failedApiRequests.labels(error).inc();
 }
 
-export function addApiRequest(authType = "none", endpoint = "/") {
-    totalApiRequests.labels(authType, endpoint).inc();
+export function addApiRequest(authType = "unknown") {
+    totalApiRequests.labels(authType).inc();
 }

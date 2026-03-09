@@ -142,7 +142,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             authType = "key";
         }
 
-        addApiRequest(authType, "/"); // increment Prometheus counter
+        addApiRequest(authType);
         next();
     });
 
