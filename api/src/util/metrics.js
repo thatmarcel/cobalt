@@ -121,6 +121,6 @@ export function addFailedApiRequest(error) {
     failedApiRequests.labels(error).inc();
 }
 
-export function addApiRequest(authType = "unknown") {
+export function addApiRequest(authType) {
     totalApiRequests.labels(authType).inc();
 }

@@ -107,7 +107,13 @@ export function createResponse(responseType, responseData) {
 
         if (metrics) {
             addServiceResponse(responseType);
-            if (responseType == "error") addServiceError(response.error.context.service, response.error.code);
+            if (responseType == "error") {
+                if (responseData.code.toString().includes("youtube.login")) {
+                    addServiceError("youtube", response.error.code);
+                } else {
+                    addServiceError(response.error.context.service, response.error.code);
+                }
+            }
         }
 
         return {
