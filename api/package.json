@@ -9,6 +9,8 @@
         "node": ">=18"
     },
     "scripts": {
+        "build-ytjs": "cd node_modules/youtubei.js && _o=\"$(pwd)\" && _td=\"$(mktemp -d)\" && cp -R ./* \"$_td\" && cd \"$_td\" && bun install && cp -R ./{dist,bundle} \"$_o\" && rm -rf \"$_td\"",
+        "postinstall": "[ -f node_modules/youtubei.js/dist/package.json ] || bun run build-ytjs",
         "start": "bun run src/cobalt",
         "test": "bun run src/util/test",
         "token:jwt": "bun run src/util/generate-jwt-secret"
