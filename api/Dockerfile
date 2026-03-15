@@ -1,4 +1,7 @@
-FROM oven/bun:latest AS build
+FROM almalinux:10 AS build
+
+RUN dnf install -y unzip && curl -fsSL https://bun.sh/install | bash
+ENV PATH="$PATH:/root/.bun/bin"
 
 WORKDIR /app
 
@@ -6,9 +9,10 @@ COPY . .
 
 RUN bun install
 
-FROM oven/bun:latest AS runtime
+FROM almalinux:10 AS runtime
 
-RUN apt update && apt upgrade -y && apt install -y ca-certificates ffmpeg
+RUN dnf install -y unzip && curl -fsSL https://bun.sh/install | bash
+ENV PATH="$PATH:/root/.bun/bin"
 
 COPY --from=build /app /app
 
