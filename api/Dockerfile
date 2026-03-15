@@ -1,28 +1,17 @@
-FROM node:23-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+FROM oven/bun:latest AS build
 
-FROM base AS build
 WORKDIR /app
-COPY . /app
 
-RUN corepack enable
-RUN apk add --no-cache python3 alpine-sdk
+COPY . .
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+RUN bun install
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm deploy --filter=@imput/cobalt-api --prod /prod/api
+FROM oven/bun:latest AS runtime
 
-FROM base AS api
-WORKDIR /app
-RUN apk add --no-cache ca-certificates ffmpeg
+RUN apt update && apt upgrade -y && apt install -y ca-certificates ffmpeg
 
-COPY --from=build --chown=node:node /prod/api /app
-COPY --from=build --chown=node:node /app/.git /app/.git
+COPY --from=build /app /app
 
-USER node
+WORKDIR /app/api
 
-EXPOSE 9000
-CMD [ "node", "src/cobalt" ]
+ENTRYPOINT ["bun", "start"]
