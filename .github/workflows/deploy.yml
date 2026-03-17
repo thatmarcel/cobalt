@@ -3,39 +3,9 @@ name: Deploy
 on:
     push:
         branches:
-            - "main"
+            - "debug"
 
 jobs:
-    deploy-frontend:
-        runs-on: ubuntu-latest
-        name: "Deploy frontend"
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
-
-            - name: Setup Bun
-              uses: oven-sh/setup-bun@ecf28ddc73e819eb6fa29df6b34ef8921c743461
-
-            - name: Run build
-              run: bun install && cd web && bun run build
-              env:
-                  WEB_HOST: ${{ secrets.WEB_HOST }}
-                  WEB_DEFAULT_API: ${{ secrets.WEB_DEFAULT_API }}
-
-            - name: Deploy to bunny.net
-              uses: ayeressian/bunnycdn-storage-deploy@922e816641b3aab7c5b4039abfd416ff3ae970c4
-              with:
-                source: "./web/build"
-                destination: "."
-                storageZoneName: "${{ secrets.BUNNY_STORAGE_ZONE_NAME }}"
-                storagePassword: "${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}"
-                accessKey: "${{ secrets.BUNNY_API_KEY }}"
-                pullZoneId: "${{ secrets.BUNNY_PULL_ZONE_ID }}"
-                upload: "true"
-                remove: "true"
-                purgePullZone: "true"
-                purgePullZoneDelay: "5"
-
     build-and-upload-backend-container-image:
         runs-on: ubuntu-latest
         name: "Build and upload backend container image"
@@ -62,8 +32,8 @@ jobs:
               with:
                   images: ghcr.io/${{ github.repository_owner }}/cobalt-api
                   tags: |
-                      type=raw,value=latest
-                      type=sha,format=short,prefix=
+                      type=raw,value=debug-latest
+                      type=sha,format=short,prefix=debug-
 
             - name: Build and push container image
               uses: docker/build-push-action@dbac3ca1e5410ec04d2cce48cfbcfa3175fb8f4f
