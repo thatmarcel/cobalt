@@ -210,7 +210,8 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
 
             req.rateLimitKey = hashHmac(token, 'rate');
             req.authType = "session";
-        } catch {
+        } catch (e) {
+            console.log(e);
             return fail(res, "error.api.generic");
         }
         next();
@@ -252,7 +253,8 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
 
         try {
             res.json(jwt.generate(getIP(req, 32)));
-        } catch {
+        } catch (e) {
+            console.log(e);
             return fail(res, "error.api.generic");
         }
     });
@@ -295,7 +297,8 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             });
 
             res.status(result.status).json(result.body);
-        } catch {
+        } catch (e) {
+            console.log(e);
             fail(res, "error.api.generic");
         }
     });
@@ -354,7 +357,8 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
     })
 
     // handle all express errors
-    app.use((_, __, res, ___) => {
+    app.use((e, __, res, ___) => {
+        console.log(e);
         return fail(res, "error.api.generic");
     })
 
@@ -409,7 +413,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
 
         if (metrics && isPrimary) {
             const metricsApp = express();
-        
+
             metricsApp.get('/metrics', async (req, res) => {
                 try {
                     const data = await aggregatorRegistry.clusterMetrics({ format: 'prometheus' });
@@ -423,7 +427,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             metricsApp.get('/*', (req, res) => {
                 res.redirect('/metrics');
             });
-        
+
             metricsApp.listen(env.metricsPort, '0.0.0.0', () => {
                 console.log(`${Green('[✓]')} prometheus metrics running on 0.0.0.0:${env.metricsPort}/metrics`);
             });
