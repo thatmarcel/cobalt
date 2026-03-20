@@ -26,7 +26,8 @@ const serviceHeaders = {
 }
 
 const hostAddressRewrites = {
-    'pbs.twimg.com': 'dualstack.twimg.twitter.map.fastly.net'
+    'pbs.twimg.com': 'dualstack.twimg.twitter.map.fastly.net',
+    'video.twimg.com': 'dualstack.video.twitter.map.fastly.net'
 }
 
 export function closeRequest(controller) {
