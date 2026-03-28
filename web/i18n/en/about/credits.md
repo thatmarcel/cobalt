@@ -31,16 +31,6 @@ they also helped us ship cobalt 10!
 all links are external and lead to their personal websites or social media.
 </section>
 
-<section id="partners">
-<SectionHeading
-    title={$t("about.heading.partners")}
-    sectionId="partners"
-/>
-
-a portion of cobalt's processing infrastructure
-is provided by our long-standing partner, [royalehosting.net]({partners.royalehosting})!
-</section>
-
 <section id="meowbalt">
 <SectionHeading
     title={$t("general.meowbalt")}
